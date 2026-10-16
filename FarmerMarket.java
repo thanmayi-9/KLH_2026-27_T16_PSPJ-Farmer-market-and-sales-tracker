@@ -1,173 +1,160 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
-public class FarmerMarket {
+// Class 1
+class Product {
+    String name;
+    double price;
+    int quantity;
+    String category;
 
-    static String[] product = new String[5];
-    static double[] price = new double[5];
-    static int[] quantity = new int[5];
-    static double[] sales = new double[5];
-
-    static Scanner sc = new Scanner(System.in);
-
-    // Method 1: Add Product Details
-    static void addProduct() {
-
-        for (int i = 0; i < 5; i++) {
-
-            System.out.println("\nEnter details for Product " + (i + 1));
-
-            System.out.print("Enter product name: ");
-            product[i] = sc.nextLine();
-
-            System.out.print("Enter price per kg: ");
-            price[i] = sc.nextDouble();
-
-            System.out.print("Enter quantity sold: ");
-            quantity[i] = sc.nextInt();
-
-            sales[i] = price[i] * quantity[i];
-
-            sc.nextLine();
-        }
-
-        System.out.println("\nAll products added successfully!");
+    // Constructor
+    Product(String name, double price, int quantity, String category) {
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+        this.category = category;
     }
 
-    // Method 2: Display Products
-    static void displayProducts() {
-
-        System.out.println("\n--- FARMERS MARKET SALES ---");
-
-        for (int i = 0; i < 5; i++) {
-
-            System.out.println("\nProduct: " + product[i]);
-            System.out.println("Price: Rs. " + price[i]);
-            System.out.println("Quantity: " + quantity[i] + " kg");
-            System.out.println("Sales: Rs. " + sales[i]);
-        }
+    // Calculate total sales
+    double calculateSales() {
+        return price * quantity;
     }
 
-    // Method 3: Find Highest Sales
-    static void highestSales() {
+    // Method overloading
+    void display() {
+        System.out.println("Product Name: " + name);
+        System.out.println("Price per kg: Rs. " + price);
+        System.out.println("Quantity Sold: " + quantity);
+        System.out.println("Total Sales: Rs. " + calculateSales());
+    }
 
-        int highest = 0;
+    void display(boolean showCategory) {
+        display();
 
-        for (int i = 1; i < 5; i++) {
+        if (showCategory) {
+            System.out.println("Category: " + category);
+        }
+    }
+}
 
-            if (sales[i] > sales[highest]) {
-                highest = i;
+// Class 2
+public class FarmersMarket {
+    Scanner sc = new Scanner(System.in);
+
+    ArrayList<Product> products = new ArrayList<Product>();
+
+    String[] categories = {"Vegetables", "Fruits", "Grains"};
+
+    // Add product
+    void addProduct() {
+        System.out.print("Enter product name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter price per kg: ");
+        double price = sc.nextDouble();
+
+        System.out.print("Enter quantity sold: ");
+        int quantity = sc.nextInt();
+        sc.nextLine();
+
+        System.out.print("Enter category: ");
+        String category = sc.nextLine();
+
+        if (name.isEmpty() || price <= 0 || quantity < 0) {
+            System.out.println("Invalid product details!");
+            return;
+        }
+
+        boolean valid = false;
+
+        for (int i = 0; i < categories.length; i++) {
+            if (category.equalsIgnoreCase(categories[i])) {
+                category = categories[i];
+                valid = true;
             }
         }
 
-        System.out.println("\nHighest Sales Product: " + product[highest]);
-        System.out.println("Sales: Rs. " + sales[highest]);
+        if (valid) {
+            Product p = new Product(name, price, quantity, category);
+            products.add(p);
+            System.out.println("Product added successfully!");
+        } else {
+            System.out.println("Invalid category!");
+        }
     }
 
-    // Method 4: Find Lowest Price
-    static void lowestPrice() {
-
-        int lowest = 0;
-
-        for (int i = 1; i < 5; i++) {
-
-            if (price[i] < price[lowest]) {
-                lowest = i;
-            }
+    // Display products
+    void displayProducts() {
+        if (products.isEmpty()) {
+            System.out.println("No products available!");
+            return;
         }
 
-        System.out.println("\nLowest Price Product: " + product[lowest]);
-        System.out.println("Price: Rs. " + price[lowest]);
-    }
-
-    // Method 5: Calculate Total Sales
-    static void totalSales() {
-
-        double total = 0;
-
-        for (int i = 0; i < 5; i++) {
-            total = total + sales[i];
+        for (int i = 0; i < products.size(); i++) {
+            System.out.println("\nProduct " + (i + 1));
+            products.get(i).display(true);
         }
-
-        System.out.println("\nTotal Market Sales: Rs. " + total);
     }
 
-    // Method 6: Calculate Average Sales
-    static void averageSales() {
+    // Search product
+    void searchProduct() {
+        sc.nextLine();
 
-        double total = 0;
-
-        for (int i = 0; i < 5; i++) {
-            total = total + sales[i];
-        }
-
-        double average = total / 5;
-
-        System.out.println("\nAverage Sales: Rs. " + average);
-    }
-
-    // Method 7: Search Product
-    static void searchProduct() {
-
-        System.out.print("\nEnter product name to search: ");
+        System.out.print("Enter product name to search: ");
         String search = sc.nextLine();
 
-        boolean found = false;
+        for (int i = 0; i < products.size(); i++) {
+            Product p = products.get(i);
 
-        for (int i = 0; i < 5; i++) {
-
-            if (product[i].equalsIgnoreCase(search)) {
-
-                System.out.println("\nProduct Found!");
-                System.out.println("Product: " + product[i]);
-                System.out.println("Price: Rs. " + price[i]);
-                System.out.println("Quantity: " + quantity[i] + " kg");
-                System.out.println("Sales: Rs. " + sales[i]);
-
-                found = true;
-                break;
+            if (p.name.equalsIgnoreCase(search)) {
+                System.out.println("Product found!");
+                p.display(true);
+                return;
             }
         }
 
-        if (!found) {
-            System.out.println("\nProduct Not Found!");
-        }
+        System.out.println("Product not found!");
     }
 
-    // Main Method
-    public static void main(String[] args) {
+    // Calculate total sales
+    void totalSales() {
+        double total = 0;
 
+        for (int i = 0; i < products.size(); i++) {
+            total = total + products.get(i).calculateSales();
+        }
+
+        System.out.println("Total Market Sales: Rs. " + total);
+    }
+
+    // Main menu
+    void menu() {
         int choice;
 
-        addProduct();
-
         do {
+            System.out.println("\n===== FARMERS MARKET TRACKER =====");
+            System.out.println("1. Add Product");
+            System.out.println("2. Display Products");
+            System.out.println("3. Search Product");
+            System.out.println("4. Calculate Total Sales");
+            System.out.println("5. Exit");
 
-            System.out.println("\n========== FARMERS MARKET ==========");
-            System.out.println("1. Display Products");
-            System.out.println("2. Highest Sales");
-            System.out.println("3. Lowest Price");
-            System.out.println("4. Total Sales");
-            System.out.println("5. Average Sales");
-            System.out.println("6. Search Product");
-            System.out.println("7. Exit");
-
-            System.out.print("Enter your choice: ");
+            System.out.print("Enter choice: ");
             choice = sc.nextInt();
 
-            sc.nextLine();
-
             switch (choice) {
-
                 case 1:
-                    displayProducts();
+                    sc.nextLine();
+                    addProduct();
                     break;
 
                 case 2:
-                    highestSales();
+                    displayProducts();
                     break;
 
                 case 3:
-                    lowestPrice();
+                    searchProduct();
                     break;
 
                 case 4:
@@ -175,23 +162,20 @@ public class FarmerMarket {
                     break;
 
                 case 5:
-                    averageSales();
-                    break;
-
-                case 6:
-                    searchProduct();
-                    break;
-
-                case 7:
-                    System.out.println("\nThank you for using Farmers Market Tracker!");
+                    System.out.println("Thank you!");
                     break;
 
                 default:
-                    System.out.println("\nInvalid Choice!");
+                    System.out.println("Invalid choice!");
             }
 
-        } while (choice != 7);
+        } while (choice != 5);
 
         sc.close();
+    }
+
+    public static void main(String[] args) {
+        FarmersMarket fm = new FarmersMarket();
+        fm.menu();
     }
 }
